@@ -101,8 +101,15 @@ class Perceptron:
 
 if __name__ == "__main__":
 	ob = Perceptron(n=1000)
-	W1 = ob.getRandomWeights(-1,1)
-	epoch,mislist,W1_upd = ob.PTA(W1,ob.S,rate=1)
-	ob.graphEpochList(epoch,mislist)            #plotting the epoch and misclassifications
 	ob.graph(ob.W)
-	ob.graph(W1_upd)
+	print(ob.W)
+	W1 = ob.getRandomWeights(-1,1)
+	print(W1)
+	epoch, mislist, W1_upd = ob.PTA(W1, ob.S, rate=1)
+	ob.graphEpochList(epoch, mislist)  # plotting the epoch and misclassifications
+	epoch, mislist, _ = ob.PTA(W1, ob.S, rate=10)
+	ob.graphEpochList(epoch, mislist)  # plotting the epoch and misclassifications
+	epoch,mislist,_ = ob.PTA(W1,ob.S,rate=0.1)
+	ob.graphEpochList(epoch,mislist)            #plotting the epoch and misclassifications
+	# ob.graph(ob.W)
+	# ob.graph(W1_upd)
