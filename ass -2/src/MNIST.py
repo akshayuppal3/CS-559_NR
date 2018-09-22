@@ -15,25 +15,6 @@ class Mnist:
 		self.testLabels = self.getLabels(self.files['testlabel'])
 		self.W = self.getRandomWeights(-1,1)         #initial weight vector
 
-	#deprecated now getImages
-	#return images from the mnist
-	def getTrainingInput(self):
-		f = gzip.open('image files//train-images-idx3-ubyte.gz', 'rb')
-		try:
-			f.seek(4)
-			images = struct.unpack('>I', f.read(4))[0]
-			rows = struct.unpack('>I', f.read(4))[0]
-			columns = struct.unpack('>I', f.read(4))[0]
-			start = f.seek(16)
-			pixel_im = []
-			for i in range(images):
-				f.seek(start + (i * rows * columns))
-				pixel = np.array(struct.unpack('>784B', f.read(rows * columns)))
-				pixel_im.append(pixel)
-			return (np.array(pixel_im),images,rows,columns)
-		except struct.error as e:
-			print(e)
-
 	def getImages(self,filename):
 		f = gzip.open(filename)
 		try:
@@ -49,19 +30,6 @@ class Mnist:
 				pixel = np.array(struct.unpack('>' + 'B' * size, f.read(size)))
 				pixel_im.append(pixel)
 			return (np.array(pixel_im), images, rows, columns)
-		except struct.error as e:
-			print(e)
-
-	#@deprecated now get labels
-	#return labels of image from Mnist data
-	def getTrainingLabels(self):
-		f = gzip.open('image files//train-labels-idx1-ubyte.gz','rb')
-		try:
-			f.seek(4)
-			images = struct.unpack('>I', f.read(4))[0]
-			f.seek(8)
-			labels = np.array(struct.unpack('>'+'B'*images, f.read(images)))
-			return(labels)
 		except struct.error as e:
 			print(e)
 
@@ -115,7 +83,7 @@ class Mnist:
 			epoch_err.append(mis)
 			epoch = epoch + 1
 			for idx in range(n):
-				W = W + rate*(self.getDesiredInput(idx,label_type='train') - self.signFunction(W @ pixel_im[idx])).reshape(-1, 1) @ (
+				W = W + rate*(self.getDesiredInput(idx,label_type='train') - self.stepFunction(W @ pixel_im[idx])).reshape(-1, 1) @ (
 					pixel_im[idx].reshape(-1, 1).T)
 			print(epoch_err[epoch - 1] / n)
 			if (epoch_err[epoch - 1] / n < e):
