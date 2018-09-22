@@ -115,7 +115,7 @@ class Mnist:
 			epoch_err.append(mis)
 			epoch = epoch + 1
 			for idx in range(n):
-				W = W + rate*(self.getDesiredInput(idx,label_type='train') - self.stepFunction(W @ pixel_im[idx])).reshape(-1, 1) @ (
+				W = W + rate*(self.getDesiredInput(idx,label_type='train') - self.signFunction(W @ pixel_im[idx])).reshape(-1, 1) @ (
 					pixel_im[idx].reshape(-1, 1).T)
 			print(epoch_err[epoch - 1] / n)
 			if (epoch_err[epoch - 1] / n < e):
@@ -132,6 +132,20 @@ class Mnist:
 			if (np.argmax(v) != testLabels[idx]):
 				error += 1
 		return error
+
+	def stepFunc(self,x):
+		if (x >= 0):
+			return 1
+		else:
+			return 0
+
+	def signFunc(self,x):
+		if (x < 0):
+			return -1
+		elif (x == 0):
+			return 0
+		elif (x > 0 ):
+			return 1
 
 	# @param : aray,list or int
 	def stepFunction(self,X):
@@ -168,19 +182,7 @@ class Mnist:
 		# plt.legend(prop={'size':7.5})
 		plt.show()
 
-	def stepFunc(self,x):
-		if (x >= 0):
-			return 1
-		else:
-			return 0
 
-	def signFunc(self,x):
-		if (x < 0):
-			return -1
-		elif (x == 0):
-			return 0
-		elif (x > 0 ):
-			return 1
 
 	def graphEpochList(self,epoch,misList):
 		plt.plot(np.array(range(epoch)),misList)
@@ -188,6 +190,6 @@ class Mnist:
 
 if __name__ == "__main__":
 	ob = Mnist()
-	W_upd = ob.PTA_mnist(ob.trainNoImages,rate=1,e=0)
+	W_upd = ob.PTA_mnist(ob.trainNoImages,rate=1,e=0.2)
 	error = ob.testing(W_upd,ob.testNoImages)
 	print(error)
