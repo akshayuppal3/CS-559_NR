@@ -1,7 +1,6 @@
 import numpy as np
 import random
 import matplotlib.pyplot as plt
-from matplotlib.pyplot import figure
 import gzip
 import struct
 
@@ -16,7 +15,7 @@ class Mnist:
 		self.W = self.getRandomWeights(-1,1)         #initial weight vector
 
 	def getImages(self,filename):
-		f = gzip.open(filename)
+		f = gzip.open('../'+filename)
 		try:
 			f.seek(4)
 			images = struct.unpack('>I', f.read(4))[0]
@@ -34,7 +33,7 @@ class Mnist:
 			print(e)
 
 	def getLabels(self,filename):
-		f = gzip.open(filename)
+		f = gzip.open('../' + filename)
 		try:
 			f.seek(4)
 			images = struct.unpack('>I', f.read(4))[0]
@@ -86,9 +85,9 @@ class Mnist:
 				W = W + rate*(self.getDesiredInput(idx,label_type='train') - self.stepFunction(W @ pixel_im[idx])).reshape(-1, 1) @ (
 					pixel_im[idx].reshape(-1, 1).T)
 			print(epoch_err[epoch - 1] / n)
-			if (epoch_err[epoch - 1] / n < e):
+			if ((epoch_err[epoch - 1] / n <= e ) or (epoch>15)):
 				break
-		return W
+		return ( W ,epoch_err,epoch)
 
 	# testing with the updates weights
 	def testing(self, W, n):
@@ -133,31 +132,15 @@ class Mnist:
 			X = self.signFunc(X)
 		return X
 
-	# for plotting the graphs
-	def graph(self,W):
-		w0,w1,w2 = W
-		x = np.array(range(-1,2))
-		figure(figsize=(8,6), dpi=80, facecolor='w', edgecolor='k')
-		plt.plot(x, -((w1*x + w0)/w2),label='Boundary')
-		# S0 = self.S0
-		# S1 = self.S1
-		# xs =[S0[i][0] for i in range(len(self.S0))]
-		# ys= [S0[i][1] for i in range(len(S0))]
-		# plt.scatter(xs,ys,marker="^",label='S0')
-		# xs =[S1[i][0] for i in range(len(S1))]
-		# ys= [S1[i][1] for i in range(len(S1))]
-		# plt.scatter(xs,ys,marker="o",label='S1')
-		# plt.legend(prop={'size':7.5})
-		plt.show()
-
-
-
 	def graphEpochList(self,epoch,misList):
 		plt.plot(np.array(range(epoch)),misList)
+		plt.xlabel('epochs')
+		plt.ylabel('no of misclassification')
 		plt.show()
 
 if __name__ == "__main__":
 	ob = Mnist()
-	W_upd = ob.PTA_mnist(ob.trainNoImages,rate=1,e=0.2)
-	error = ob.testing(W_upd,ob.testNoImages)
-	print(error)
+	W_upd,epoch_erros,epoch = ob.PTA_mnist(n=60000,rate=0.5,e=0.15)
+	ob.graphEpochList(epoch,epoch_erros)
+	error = ob.testing(W_upd, ob.testNoImages)
+	print("testing error = ",error)
