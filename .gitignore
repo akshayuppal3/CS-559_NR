@@ -1,7 +1,9 @@
 # Byte-compiled / optimized / DLL files
+neuralNotes.pdf
 __pycache__/
 *.py[cod]
 *$py.class
+*.Thumbs.db
 
 # C extensions
 *.so
