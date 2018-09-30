@@ -16,15 +16,15 @@ class Perceptron:
 		return S
 
 	def getTrainingPoint(self):
-		S0 = np.array([[-1,-1,-1],[-1,-1,1],[-1,1,-1],[1,-1,-1],[1,-1,1],[1,1,-1],[1,1,1]])
-		S1 = np.array([[-1,1,1]])
+		S0 = np.array([[0,0,0],[1,1,1],[0,1,0],[1,0,0],[1,0,1],[1,1,0],[0,1,1]])
+		S1 = np.array([[0,0,1]])
 		return S0, S1
 
 	def getRandomWeights(self,a,b):
-		w0 = -1
-		w1 = -1/2
-		w2 = 1/2
-		w3 = 1/2
+		w0 = 1/2
+		w1 = -1
+		w2 = -1
+		w3 = 1
 		W = np.array([w0,w1,w2,w3])       # weight vector Ω
 		return W
 
@@ -69,7 +69,7 @@ class Perceptron:
 		mis = 0
 		for X_ele in S:
 			X = np.array([1] + list(X_ele))  # X input vector
-			y = self.signFunc(W1.T @ X)
+			y = self.stepFunc(W1.T @ X)
 			d = self.boolClass(X_ele)             #desired input
 			if (y == 1 and d == 0):
 				W1 = W1 - ( rate * X)
