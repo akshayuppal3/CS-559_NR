@@ -16,12 +16,13 @@ class Gradient:
 		X = np.array([x1,x2])       # weight vector Ω
 		return X
 
+
 	# Perceptron training algoritm
 	def weightUpdate(self,rate,W,type= 'grad'):
 		if type == 'grad':
 			W = W - rate * self.gradient(W)
 		elif type == 'hessian':
-			W = W - rate * self.gradient(W).T @ np.linalg.inv(self.hessian(W)) @ self.gradient(W)
+			W = W - rate * np.linalg.inv(self.hessian(W)) @ self.gradient(W)
 		return(W)
 
 	def energy(self,W):
@@ -83,5 +84,4 @@ if __name__ == "__main__":
 	W0 = ob.W
 	print(ob.W)
 	descentAlgo(ob,rate,W0,type='grad')
-	print("hessian")
 	descentAlgo(ob,rate,W0,type='hessian')
