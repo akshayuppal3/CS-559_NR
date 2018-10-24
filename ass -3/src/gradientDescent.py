@@ -2,11 +2,12 @@ import numpy as np
 import random
 import matplotlib.pyplot as plt
 
+threshold  = 0.000001
 class Gradient:
 	def __init__(self):
 		# self.W = self.getInputPoints()
 		# self.W = np.array([0.36298233,0.20383835])
-		self.W = np.array([0.19333942, 0.13318579])
+		self.W = np.array([0.19, 0.12])
 	def getInputPoints(self):
 		x1 = random.uniform(0,1)
 		x2 = random.uniform(0,1)
@@ -16,12 +17,16 @@ class Gradient:
 		X = np.array([x1,x2])       # weight vector Ω
 		return X
 
+
 	# Perceptron training algoritm
 	def weightUpdate(self,rate,W,type= 'grad'):
 		if type == 'grad':
 			W = W - rate * self.gradient(W)
 		elif type == 'hessian':
-			W = W - rate * self.gradient(W).T @ np.linalg.inv(self.hessian(W)) @ self.gradient(W)
+			print("hessian inverse= ",np.linalg.inv(self.hessian(W)))
+			W = W - ( rate * np.linalg.inv(self.hessian(W)) @ self.gradient(W) )
+			print("new value",rate * np.linalg.inv(self.hessian(W)) @ self.gradient(W))
+		print("weight= ",W)
 		return(W)
 
 	def energy(self,W):
@@ -36,16 +41,18 @@ class Gradient:
 		dw1 = (1/(1-x1-x2) - 1/x1)
 		dw2 = (1/(1-x1-x2) - 1/x2)
 		grad = np.array([dw1,dw2])
+		print("grad= ",grad)
 		return grad
 
 	def hessian(self,W):
 		w1 = W[0]
 		w2 = W[1]
-		dw11 = ((1/(1-w1-w2)**2 )+ 1/(w2**2))
+		dw11 = ((1/(1-w1-w2)**2 )+ 1/(w1**2))
 		dw12 = (1/(1-w1-w2)**2)
 		dw21 = (1 / (1 - w1 - w2)**2)
 		dw22 = ( (1 / (1 - w1 - w2)**2) + 1 / (w2**2))
 		hessian = np.array([[dw11,dw12],[dw21,dw22]])
+		print("hessian",hessian)
 		return hessian
 
 	def graphEnergy(self,epoch,energy):
@@ -69,19 +76,25 @@ def descentAlgo(ob,rate,W0,type='gradient'):
 	Energy = []
 	xpoints = []
 	ypoints = []
-	for i in range(8):
-		W = ob.weightUpdate(rate, W)
+	dE = 50
+	counter = 0
+	while (abs(dE) > threshold ):
+		E0 = ob.energy(W)
+		W = ob.weightUpdate(rate, W,type=type)
+		E1 = ob.energy(W)
+		dE = E0 - E1
+		print("Difference energy",dE)
 		xpoints.append(W[0])
 		ypoints.append(W[1])
 		Energy.append(ob.energy(W))
-	ob.graphEnergy(8, Energy)
+		counter += 1
+	ob.graphEnergy(counter, Energy)
 	ob.graphWeights(xpoints,ypoints)
+	return (counter)
 
 if __name__ == "__main__":
-	rate = 0.05
 	ob = Gradient()
 	W0 = ob.W
-	print(ob.W)
-	descentAlgo(ob,rate,W0,type='grad')
-	print("hessian")
-	descentAlgo(ob,rate,W0,type='hessian')
+	iterGrad = descentAlgo(ob,0.05,W0,type='grad')
+	iterNewton = descentAlgo(ob,1,W0,type='hessian')
+	print(iterGrad,iterNewton)

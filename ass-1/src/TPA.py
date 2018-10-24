@@ -1,5 +1,4 @@
 import numpy as np
-import random
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import figure
 
@@ -16,16 +15,15 @@ class Perceptron:
 		return S
 
 	def getTrainingPoint(self):
-		S0 = np.array([[0,0,0],[1,1,1],[0,1,0],[1,0,0],[1,0,1],[1,1,0],[0,1,1]])
-		S1 = np.array([[0,0,1]])
+		S0 = np.array([[0,0],[0,1],[1,0]])
+		S1 = np.array([[1,1]])
 		return S0, S1
 
 	def getRandomWeights(self,a,b):
-		w0 = 1/2
-		w1 = -1
-		w2 = -1
-		w3 = 1
-		W = np.array([w0,w1,w2,w3])       # weight vector Ω
+		w0 = -1/2
+		w1 = 1
+		w2 = 0
+		W = np.array([w0,w1,w2])       # weight vector Ω
 		return W
 
 	# for plotting the graphs
@@ -50,7 +48,8 @@ class Perceptron:
 			return 1
 		else:
 			return 0
-	def signFunc(selfself,x):
+
+	def signFunc(self,x):
 		if (x < 0):
 			return -1
 		elif (x == 0):
